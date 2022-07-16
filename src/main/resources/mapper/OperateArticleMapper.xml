@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hp.article.mapper.OperateArticleMapper">
+
+    <resultMap id="BaseResultMap" type="com.hp.article.pojo.Article">
+            <id property="id" column="id" jdbcType="BIGINT"/>
+            <result property="articleTitle" column="article_title" jdbcType="VARCHAR"/>
+            <result property="articleAuthor" column="article_author" jdbcType="VARCHAR"/>
+            <result property="articleSource" column="article_source" jdbcType="VARCHAR"/>
+            <result property="articleTime" column="article_time" jdbcType="DATE"/>
+            <result property="articleContent" column="article_content" jdbcType="VARCHAR"/>
+            <result property="articleEditor" column="article_editor" jdbcType="VARCHAR"/>
+            <result property="articleType" column="article_type" jdbcType="VARCHAR"/>
+            <result property="articleField" column="article_field" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,article_title,article_author,
+        article_source,article_time,article_content,
+        article_editor,article_type,article_field
+    </sql>
+    <select id="getAllByArticleTitleAndArticleSource" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from operate_articles
+        where
+        article_title = #{articleTitle,jdbcType=VARCHAR} and article_source=#{articleSource,jdbcType=VARCHAR}
+    </select>
+    <select id="getByArticleTitle" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from operate_articles
+        where
+        article_title = #{articleTitle,jdbcType=VARCHAR}
+    </select>
+    <select id="getByArticleTitleAndId" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from operate_articles
+        where
+        article_title = #{articleTitle,jdbcType=VARCHAR}
+        AND id = #{id,jdbcType=NUMERIC}
+    </select>
+
+
+<!--    List<Article> getArticlesByKey(@Param("page") Page<Article>,@Param("keyword") String keyword);-->
+    <select id="getArticlesByKey" resultType="article">
+        select
+        <include refid="Base_Column_List"/>
+        from operate_articles where article_title like CONCAT(#{keyWord},"%")
+        or article_content like CONCAT(#{keyWord},"%")
+        or article_author like CONCAT(#{keyWord},"%")
+    </select>
+
+<!--    List<Article> getAll();-->
+    <select id="getAll" resultType="article">
+        select
+        <include refid="Base_Column_List"/>
+        from operate_articles
+    </select>
+
+    <select id="getAllArticleType" resultType="string">
+        select distinct article_type from operate_articles
+    </select>
+    <select id="getAllArticleField" resultType="string">
+        select distinct article_field from operate_articles
+    </select>
+    <select id="getAllArticleTime" resultType="integer">
+        select distinct year (article_time) from operate_articles
+    </select>
+
+    <!---->
+    <select id="getArticlesByTags" resultType="article">
+
+        select
+        <include refid="Base_Column_List"/>
+          from operate_articles
+          <where>
+          <!--判断位置,再执行模糊查询-->
+              <choose>
+                    <when test="location==null or location=='' or location=='不限'">
+                            <if test="keyWord!=null and keyWord!=''">
+                            <!--这里需要加一个小括号,不然会先执行and再执行or-->
+                            (
+                                article_title like CONCAT(#{keyWord},"%")
+                                or article_content like CONCAT(#{keyWord},"%")
+                                or article_author like CONCAT(#{keyWord},"%")
+                                )
+                            </if>
+                    </when>
+                    <when test="location=='标题'">
+                        <if test="keyWord!=null and keyWord!=''">
+                        article_title like CONCAT(#{keyWord},"%")
+                        </if>
+                    </when>
+                    <when test="location=='内容'">
+                        <if test="keyWord!=null and keyWord!=''">
+                        article_content like CONCAT(#{keyWord},"%")
+                        </if>
+                    </when>
+              </choose>
+
+
+              <if test="time!=null and  time.size!=0">
+                  and year(article_time)  in
+                  <foreach collection="time" item="itemti"  open="(" close=")" separator=",">
+                      #{itemti}
+                  </foreach>
+              </if>
+              <if test="type!=null and  type.size!=0">
+                  and article_type in
+                  <foreach collection="type" item="itemty"  open="(" close=")" separator=",">
+                      #{itemty}
+                  </foreach>
+              </if>
+              <if test="field!=null and  field.size!=0">
+                  and article_field in
+                  <foreach collection="field" item="itemf"  open="(" close=")" separator=",">
+                      #{itemf}
+                  </foreach>
+              </if>
+              <if test="source!=null and  source.size!=0">
+                  and article_source in
+                  <foreach collection="source" item="items"  open="(" close=")" separator=",">
+                      #{items}
+                  </foreach>
+              </if>
+
+          </where>
+    </select>
+
+
+
+</mapper>

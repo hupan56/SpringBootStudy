@@ -1,0 +1,15 @@
+spring:
+  datasource:
+    username: root
+    password: 11255917
+    url: jdbc:mysql://localhost:3306/article? serverTimezone=UTC&useUnicode=true&characterEncoding=utf-8
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  thymeleaf:
+    cache: false
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  type-aliases-package: com.hp.article.pojo
+
+utils:
+  pageSize: 5
