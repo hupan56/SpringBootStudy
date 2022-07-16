@@ -15,7 +15,7 @@ public class ArticcleApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(ArticcleApplication.class, args);
-
+        System.out.println("master");
     }
 
 }
