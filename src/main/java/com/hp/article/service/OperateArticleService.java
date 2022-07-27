@@ -1,6 +1,6 @@
 package com.hp.article.service;
 
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.hp.article.pojo.Admin;
 import com.hp.article.pojo.Article;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.apache.ibatis.annotations.Param;
@@ -20,9 +20,12 @@ public interface OperateArticleService extends IService<Article> {
 
 //    获取所有文章分类，为前台传去标签体
     List<String> getAllArticleType();
+////根据分类获取不同的信息
+//    List<Article> getArticlesBySource( String source ,int currentPage);
 
 //    获得文章所有领域
     List<String> getAllArticleField();
+
 //    获取所有文章发表的年份
     List<Integer> getAllArticleTime();
 
@@ -33,8 +36,13 @@ public interface OperateArticleService extends IService<Article> {
 //    添加对象
     int insert(Article article);
 //    删除对象
-    int deleteById(Article user);
+    int deleteById(Integer id );
 
-    boolean updateById(Article entity);
+    boolean updateById(Article article);
 
+    Admin getAdminById(long id);
+
+    Admin getAdminByName(String adminName);
+
+    String getAdminNameById(long id);
 }

@@ -21,6 +21,9 @@
         article_source,article_time,article_content,
         article_editor,article_type,article_field
     </sql>
+
+
+    <!--   获取所有的标题和来源-->
     <select id="getAllByArticleTitleAndArticleSource" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
@@ -35,6 +38,13 @@
         where
         article_title = #{articleTitle,jdbcType=VARCHAR}
     </select>
+
+<!--    根据id删除文章-->
+    <select id="deleteByArticleId" resultType="Integer">
+        DELETE FROM operate_articles WHERE id=#{id}
+    </select>
+
+
     <select id="getByArticleTitleAndId" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
@@ -44,7 +54,7 @@
         AND id = #{id,jdbcType=NUMERIC}
     </select>
 
-
+<!--关键词模糊查找获得文章信息-->
 <!--    List<Article> getArticlesByKey(@Param("page") Page<Article>,@Param("keyword") String keyword);-->
     <select id="getArticlesByKey" resultType="article">
         select
@@ -53,7 +63,13 @@
         or article_content like CONCAT(#{keyWord},"%")
         or article_author like CONCAT(#{keyWord},"%")
     </select>
-
+<!--&lt;!&ndash;    根据来源获得不同的文章&ndash;&gt;-->
+<!--    <select id="getArticlesBySource" resultType="article">-->
+<!--        select-->
+<!--        <include refid="Base_Column_List"/>-->
+<!--        from operate_articles where article_source =#{source}-->
+<!--    </select>-->
+<!--获得所有信息-->
 <!--    List<Article> getAll();-->
     <select id="getAll" resultType="article">
         select
@@ -67,8 +83,8 @@
     <select id="getAllArticleField" resultType="string">
         select distinct article_field from operate_articles
     </select>
-    <select id="getAllArticleTime" resultType="integer">
-        select distinct year (article_time) from operate_articles
+    <select id="getAllArticleTime" resultType="Integer">
+        select distinct year(article_time) from operate_articles
     </select>
 
     <!---->

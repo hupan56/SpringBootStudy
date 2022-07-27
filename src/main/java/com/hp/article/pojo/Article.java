@@ -4,7 +4,11 @@ import com.baomidou.mybatisplus.annotation.*;
 
 import java.io.Serializable;
 import java.util.Date;
+
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import net.bytebuddy.asm.Advice;
 
 /**
  * 
@@ -12,6 +16,8 @@ import lombok.Data;
  */
 @TableName(value ="operate_articles")
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class Article implements Serializable {
     /**
      * 主键
@@ -60,6 +66,7 @@ public class Article implements Serializable {
     private String articleField;
 
     @TableLogic
+    @TableField(updateStrategy= FieldStrategy.IGNORED)
     private Integer isDeleted;
 
     @TableField(exist = false)

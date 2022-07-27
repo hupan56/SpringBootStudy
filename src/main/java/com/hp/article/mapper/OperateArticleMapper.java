@@ -2,6 +2,7 @@ package com.hp.article.mapper;
 import java.util.List;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.hp.article.pojo.Admin;
 import org.apache.ibatis.annotations.Param;
 
 import com.hp.article.pojo.Article;
@@ -21,6 +22,7 @@ public interface  OperateArticleMapper extends BaseMapper<Article> {
 
     List<Article> getAllByArticleTitleAndArticleSource(@Param("articleTitle") String articleTitle,
                                                        @Param("articleSource") String articleSource);
+
 
     Page<Article> getAll(@Param("page") Page<Article> page);
 
@@ -43,15 +45,30 @@ public interface  OperateArticleMapper extends BaseMapper<Article> {
                                     @Param("source") List<String> source
     );
 
+//    根据文章不同的分类返回信息
+//     Page<Article> getArticlesBySource(@Param("page") Page<Article> page,@Param("source") String source);
+
+//根据id删除文章
+    int deleteByArticleId(Integer id);
+
 
     @Override
     int insert(Article entity);
 
-    @Override
-    int deleteById(Article user);
 
-    @Override
-    int updateById(Article entity);
+
+//    @Override
+//    int updateById(Article entity);
+    @Select("select * from admin where id=#{id}")
+    Admin getAdminById(@Param("id") long id);
+
+
+//    根据用户名查找用户
+    @Select("select * from admin where admin_name=#{adminName}")
+    Admin getAdminByName(@Param("adminName") String adminNames);
+
+    @Select("select admin_name from admin where id=#{id}")
+    String getAdminNameById(@Param("id") long id);
 }
 
 

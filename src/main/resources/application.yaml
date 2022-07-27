@@ -10,6 +10,18 @@ mybatis-plus:
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
   type-aliases-package: com.hp.article.pojo
+  global-config:
+    db-config:
+      id-type: auto
 
 utils:
   pageSize: 5
+
+#jwt加密
+admin:
+  jwt:
+    # 加密秘钥
+    secret: f4e2e52034348f86b67cde581c0f9eb5
+    # token有效时长，7天，单位秒
+    expire: 604800
+    header: authorization

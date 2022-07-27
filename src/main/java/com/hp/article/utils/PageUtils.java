@@ -1,4 +1,4 @@
-package com.hp.article.pojo;
+package com.hp.article.utils;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Utils {
+public class PageUtils {
 
    @Value("${utils.pageSize}")
     private Integer pageSize;
