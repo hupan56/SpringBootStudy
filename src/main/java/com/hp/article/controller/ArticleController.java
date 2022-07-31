@@ -1,6 +1,5 @@
 package com.hp.article.controller;
 
-
 import com.hp.article.pojo.Article;
 import com.hp.article.service.impl.OperateArticleServiceImpl;
 import io.swagger.annotations.ApiImplicitParam;
@@ -13,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 //@RestController
-public class OperateArticleController {
+public class ArticleController {
 
     @Autowired
     OperateArticleServiceImpl opai;
@@ -108,31 +107,32 @@ public class OperateArticleController {
         return articlesByTags;
     }
 
-    @ApiOperation(value = "对文章进行添加操作，传入一个对象")
-    @ApiImplicitParam(name = "article",value = "文章实体类对象" , required = true)
-
-    @RequestMapping(value = "article/insertArticle",method = RequestMethod.POST)
-    public int insertArticle(@RequestParam("article") Article article){
-        int insert = opai.insert(article);
-        return insert;
-    }
-
-    @ApiOperation(value = "对文章进行删除操作，传入一个id")
-    @ApiImplicitParam(name = "id",value = "文章实体类对象的id" , required = true)
-
-    @RequestMapping(value = "article/deleteArticle",method = RequestMethod.POST)
-    public int deleteArticle(@RequestParam("id") Integer id){
-        int deleteById = opai.deleteById(id);
-        return deleteById;
-    }
-
-    @ApiOperation(value = "对文章进行更新操作，传入一个对象")
-    @ApiImplicitParam(name = "article",value = "文章实体类对象" , required = true)
-
-    @RequestMapping(value = "article/updateArticle",method = RequestMethod.POST)
-    public boolean updateArticle(@RequestParam("article") Article article){
-       boolean updateById = opai.updateById(article);
-        return updateById;
-    }
+//    下面的操作是管理员实现的
+//    @ApiOperation(value = "对文章进行添加操作，传入一个对象")
+//    @ApiImplicitParam(name = "article",value = "文章实体类对象" , required = true)
+//
+//    @RequestMapping(value = "article/insertArticle",method = RequestMethod.POST)
+//    public int insertArticle(@RequestParam("article") Article article){
+//        int insert = opai.insert(article);
+//        return insert;
+//    }
+//
+//    @ApiOperation(value = "对文章进行删除操作，传入一个id")
+//    @ApiImplicitParam(name = "id",value = "文章实体类对象的id" , required = true)
+//
+//    @RequestMapping(value = "article/deleteArticle",method = RequestMethod.POST)
+//    public int deleteArticle(@RequestParam("id") Integer id){
+//        int deleteById = opai.deleteById(id);
+//        return deleteById;
+//    }
+//
+//    @ApiOperation(value = "对文章进行更新操作，传入一个对象")
+//    @ApiImplicitParam(name = "article",value = "文章实体类对象" , required = true)
+//
+//    @RequestMapping(value = "article/updateArticle",method = RequestMethod.POST)
+//    public boolean updateArticle(@RequestParam("article") Article article){
+//       boolean updateById = opai.updateById(article);
+//        return updateById;
+//    }
 
 }

@@ -13,7 +13,6 @@ mybatis-plus:
   global-config:
     db-config:
       id-type: auto
-
 utils:
   pageSize: 5
 
@@ -25,3 +24,10 @@ admin:
     # token有效时长，7天，单位秒
     expire: 604800
     header: authorization
+server:
+  port: 8083
+file:
+  upload:
+    url: D:/programming/Demo/SpringBootStudy/articcle/src/main/java/com/hp/test
+  download:
+    url: D:\programming\Demo\SpringBootStudy\articcle\src\main\java\com\hp\test

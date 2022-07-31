@@ -71,7 +71,7 @@ public class AccountRealm extends AuthorizingRealm {
 //        根据用户名查找用户
         Admin user = opai.getAdminByName(userToken.getUsername());
 
-//        System.out.println(user.toString());
+        System.out.println(user.toString());
 
 
         if (user == null){
@@ -90,9 +90,9 @@ public class AccountRealm extends AuthorizingRealm {
 //        BeanUtil.copyProperties(user,profile);
 
         BeanUtils.copyProperties(user,profile);
-
+//        System.out.println("最后一步了" + SecurityUtils.getSubject());
         System.out.println("最后一步了" + SecurityUtils.getSubject().getPrincipal());
-//        System.out.println("获取到的jwtToken" + jwtToken);
+        System.out.println("获取到的jwtToken" + jwtToken);
 //        返回用户信息
         return new SimpleAuthenticationInfo(profile,user.getAdminPassword(),"");
     }

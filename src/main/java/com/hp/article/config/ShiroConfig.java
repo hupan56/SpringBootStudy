@@ -57,25 +57,25 @@ public class ShiroConfig {
 
         return bean;
     }
-    @Bean
-    public ShiroFilterChainDefinition shiroFilterChainDefinition() {
-        DefaultShiroFilterChainDefinition chain = new DefaultShiroFilterChainDefinition();
-        // 哪些请求可以匿名访问
-          /*
-        map 中value 的意义
-        * anon: 无需认证就可以访问资源；
-        * authc：必须认证后才能访问资源；
-        * user：必须拥有“记住我”功能才能访问资源；
-        * perms：拥有对某个资源的权限才能访问资源；
-        * role：拥有某个角色权限才能访问资源
-        * **/
-        chain.addPathDefinition("/user/login", "anon");      // 登录接口
-        chain.addPathDefinition("/user/notLogin", "anon");   // 未登录错误提示接口
-        chain.addPathDefinition("/403", "anon");    // 权限不足错误提示接口
-        // 除了以上的请求外，其它请求都需要登录
-        chain.addPathDefinition("user/**", "authc");
-        return chain;
-    }
+//    @Bean
+//    public ShiroFilterChainDefinition shiroFilterChainDefinition() {
+//        DefaultShiroFilterChainDefinition chain = new DefaultShiroFilterChainDefinition();
+//        // 哪些请求可以匿名访问
+//          /*
+//        map 中value 的意义
+//        * anon: 无需认证就可以访问资源；
+//        * authc：必须认证后才能访问资源；
+//        * user：必须拥有“记住我”功能才能访问资源；
+//        * perms：拥有对某个资源的权限才能访问资源；
+//        * role：拥有某个角色权限才能访问资源
+//        * **/
+//        chain.addPathDefinition("/user/login", "anon");      // 登录接口
+//        chain.addPathDefinition("/user/notLogin", "anon");   // 未登录错误提示接口
+//        chain.addPathDefinition("/403", "anon");    // 权限不足错误提示接口
+//        // 除了以上的请求外，其它请求都需要登录
+//        chain.addPathDefinition("user/**", "authc");
+//        return chain;
+//    }
 
     /**
      * 3、配置DefaultWebSecurityManager
@@ -102,12 +102,6 @@ public class ShiroConfig {
 
 
 
-
-
-
-
-
-
     /**
      *  开启Shiro的注解(如@RequiresRoles,@RequiresPermissions)
      * @return
@@ -121,17 +115,17 @@ public class ShiroConfig {
         return advisorAutoProxyCreator;
     }
 
-//    /**
-//     * 开启aop注解支持
-//     * @param securityManager
-//     * @return
-//     */
-//    @Bean
-//    public AuthorizationAttributeSourceAdvisor authorizationAttributeSourceAdvisor(@Qualifier("securityManager") DefaultWebSecurityManager securityManager) {
-//        AuthorizationAttributeSourceAdvisor authorizationAttributeSourceAdvisor = new AuthorizationAttributeSourceAdvisor();
-//        authorizationAttributeSourceAdvisor.setSecurityManager(securityManager);
-//        return authorizationAttributeSourceAdvisor;
-//    }
+    /**
+     * 开启aop注解支持
+     * @param securityManager
+     * @return
+     */
+    @Bean
+    public AuthorizationAttributeSourceAdvisor authorizationAttributeSourceAdvisor(@Qualifier("securityManager") DefaultWebSecurityManager securityManager) {
+        AuthorizationAttributeSourceAdvisor authorizationAttributeSourceAdvisor = new AuthorizationAttributeSourceAdvisor();
+        authorizationAttributeSourceAdvisor.setSecurityManager(securityManager);
+        return authorizationAttributeSourceAdvisor;
+    }
 
 
 
