@@ -45,4 +45,6 @@ public interface OperateArticleService extends IService<Article> {
     Admin getAdminByName(String adminName);
 
     String getAdminNameById(long id);
+
+
 }

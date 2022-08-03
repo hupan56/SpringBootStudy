@@ -9,9 +9,11 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class GlobalExceptionHandler  {
 
     @ExceptionHandler
-    public ResultUtil handExpection(Exception e){
+    public ResultUtil handExpection(Exception e) {
 
         e.printStackTrace();
-        return new ResultUtil(false,"服务器内部错误，请求失败");
+        return new ResultUtil(false,"服务器内部错误，请求失败",500);
     }
+//    NullPointerException
+
 }

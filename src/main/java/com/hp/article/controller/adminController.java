@@ -3,15 +3,13 @@ package com.hp.article.controller;
 
 import com.hp.article.pojo.Admin;
 import com.hp.article.pojo.Article;
-import com.hp.article.service.OperateArticleService;
 import com.hp.article.service.impl.OperateArticleServiceImpl;
+//import com.hp.article.shiro.JwtToken;
+//import com.hp.article.utils.JwtUtils;
 import com.hp.article.utils.JwtUtils;
 import com.hp.article.utils.ResultUtil;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiOperation;
-import lombok.extern.slf4j.Slf4j;
+import javafx.beans.binding.ObjectExpression;
 import net.minidev.json.JSONObject;
-import org.apache.ibatis.util.MapUtil;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.*;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
@@ -24,61 +22,46 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
-import java.util.ArrayDeque;
+import java.util.HashMap;
+import java.util.Map;
 
 
 @RestController
 public class adminController {
 
+    Object data=null;
+
     @Autowired
     OperateArticleServiceImpl opai;
 
-    @Autowired
-    JwtUtils jwtUtils;
+//    @Autowired
+//    JwtUtils jwtUtils;
 
-
-    @RequestMapping(value = "user/login", method = RequestMethod.POST)
-    public ResultUtil doLogin(@RequestBody Admin admin, Boolean rememberMe, HttpServletRequest request, HttpServletResponse response) throws Exception {
-
-        // 验证帐号和密码
-        Subject subject = SecurityUtils.getSubject();
+    @RequestMapping(value = "/login", method = RequestMethod.POST)
+//    , Boolean rememberMe
+    public ResultUtil doLogin(@RequestBody Admin admin, HttpServletRequest request, HttpServletResponse response) throws Exception {
         UsernamePasswordToken token = new UsernamePasswordToken(admin.getAdminName(), admin.getAdminPassword());
-        // 记住登录状态
-        token.setRememberMe(rememberMe);
+        System.out.println(admin);
+        System.out.println("------------"+token);
+
         try {
-            subject.login(token);
-            System.out.println(subject.isAuthenticated());
-            //            如果验证通过再根据用户名查找到该用户
             Admin adminObj = opai.getAdminByName(admin.getAdminName());
             if (adminObj == null) {
-                return new ResultUtil(false, "用户不存在");
+                return new ResultUtil(false, "用户不存在",401);
             }
             if (!adminObj.getAdminPassword().equals(admin.getAdminPassword())) {
-                return new ResultUtil(false, "密码错误");
+                return new ResultUtil(false, "密码错误",401);
             }
-//            根据用户id生成一个jwt
-            String jwt = jwtUtils.getToken(adminObj.getId());
-
-//            将jwt写入
-            response.setHeader("authorization", jwt);
-            response.setHeader("Access-Control-Expose-Headers", "authorization");
-
-            //            如果正确就返回用户信息
-
-            return new ResultUtil(true, admin);
-//                    .success(MapUtil.builder()
-//                    .put("id", user.getId())
-//                    .put("username", user.getUsername())
-//                    .put("avatar", user.getAvatar())
-//                    .put("email", user.getEmail())
-//                    .map()
-//            );
+            JwtUtils jwtUtil = new JwtUtils();
+            Map<String, Object> chaim = new HashMap<>();
+            chaim.put("username", admin.getAdminName());
+            String jwtToken = jwtUtil.encode(admin.getAdminName(), 5 * 60 * 1000, chaim);
+            return new ResultUtil(true,"登陆成功",jwtToken,200);
         } catch (UnknownAccountException e) {
-            return new ResultUtil(false, "用户不存在2");
+            return new ResultUtil(false, "用户不存在2",400);
         } catch (IncorrectCredentialsException e) {
-            return new ResultUtil(false, "密码不正确2");
+            return new ResultUtil(false, "密码不正确2",400);
         }
-
     }
 
 //    @ApiOperation(value = "对文章进行添加操作，传入一个对象")
@@ -86,14 +69,9 @@ public class adminController {
     @RequiresAuthentication
     @RequestMapping(value = "user/insertArticle",method = RequestMethod.POST)
     public ResultUtil insertArticle(@RequestBody Article article){
-        Subject subject = SecurityUtils.getSubject();
-        if(subject.isAuthenticated()){
             //        如果大于0，则插入成功
             boolean insert = opai.insert(article)>0;
-            return new ResultUtil(insert);
-        }else {
-            return new ResultUtil(false, "管理员请先进行登录");
-        }
+            return new ResultUtil(insert,"添加成功",200);
 
     }
     //---------------------------
@@ -102,14 +80,10 @@ public class adminController {
 //    @RequiresAuthentication
     @RequestMapping(value = "user/deleteArticle",method = RequestMethod.DELETE)
     public ResultUtil deleteArticle(@RequestParam("id") Integer id){
-        Subject subject = SecurityUtils.getSubject();
-        if(subject.isAuthenticated()){
             //        如果大于0则插入成功
             boolean deleteById = opai.deleteById(id)>0;
-            return new ResultUtil(deleteById);
-        }else {
-            return new ResultUtil(false, "管理员请先进行登录");
-        }
+            return new ResultUtil(deleteById,"删除成功",200);
+
 
     }
     //--------------------------------------------
@@ -118,13 +92,9 @@ public class adminController {
 
     @RequestMapping(value = "user/updateArticle",method = RequestMethod.PUT)
     public ResultUtil updateArticle(@RequestBody Article article){
-        Subject subject = SecurityUtils.getSubject();
-        if(subject.isAuthenticated()){
             boolean updateById = opai.updateById(article);
-            return new ResultUtil(updateById);
-        }else {
-            return new ResultUtil(false, "管理员请先进行登录");
-        }
+            return new ResultUtil(updateById,"修改成功",200);
+
     }
 //    ------------
 
@@ -133,87 +103,82 @@ public class adminController {
 
     @RequestMapping(value = "user/getArticle",method = RequestMethod.GET)
     public ResultUtil getArticleById(@RequestParam("id") Integer id){
-        Subject subject = SecurityUtils.getSubject();
-        if (subject.isAuthenticated()) {
             Article byId = opai.getById(id);
-            return new ResultUtil(true,byId);
-        }else{
-            return new ResultUtil(false,"管理员请先进行登录");
-        }
+            return new ResultUtil(true,"登录成功",byId,200);
 
     }
-
-
-    @GetMapping("user/logout")
+    @GetMapping("/logout")
     public ResultUtil logout() {
         Subject subject = SecurityUtils.getSubject();
-//        AccountProfile profile = (AccountProfile) subject.getPrincipal();
-//        System.out.println(profile.getId());
-//        会请求到logout
         if (subject.isAuthenticated()) {
             subject.logout();
-            return new ResultUtil(true,"退出登陆成功");
+            return new ResultUtil(true,"退出登陆成功",200);
         }else{
-            return new ResultUtil(false,"请先进行登录再注销");
+            return new ResultUtil(false,"请先进行登录再注销",401);
         }
     }
 
     @Value("${file.upload.url}")
     private String uploadFilePath;
     //    @Slf4j
-    @RequestMapping(value = "upload",method = RequestMethod.PUT)
-        public ResultUtil httpUpload(@RequestParam("files") MultipartFile files[]){
+    @RequestMapping(value = "user/upload",method = RequestMethod.POST)
+        public ResultUtil httpUpload(@RequestParam("files") MultipartFile files[]) {
+        Subject subject = SecurityUtils.getSubject();
 
-            JSONObject object=new JSONObject();
-            for(int i=0;i<files.length;i++){
+//        System.out.println(profile.getId());
+//        会请求到logout
+        if (!subject.isAuthenticated()) {
+            return new ResultUtil(false,"管理员请先进行登录",401);
+        } else {
+            JSONObject object = new JSONObject();
+            for (int i = 0; i < files.length; i++) {
                 String fileName = files[i].getOriginalFilename();  // 文件名
-                File dest = new File(uploadFilePath +'/'+ fileName);
+                File dest = new File(uploadFilePath + '/' + fileName);
                 if (!dest.getParentFile().exists()) {
                     dest.getParentFile().mkdirs();
                 }
                 try {
                     files[i].transferTo(dest);
                 } catch (Exception e) {
-////                    log.error("{}",e);
-//                    object.put("success",2);
-//                    object.put("result","程序错误，请重新上传");
-                    return new ResultUtil(false,"程序错误，请重新上传");
+                    return new ResultUtil(false, "程序错误，请重新上传",401);
                 }
             }
-            object.put("success",1);
-            object.put("result","文件上传成功");
-            return new ResultUtil(true,"文件上传成功");
+            object.put("success", 1);
+            object.put("result", "文件上传成功");
+            return new ResultUtil(true, "文件上传成功",200);
         }
-
+    }
     @Value("${file.upload.url}")
     private String downloadFilePath;
-    @RequestMapping(value = "/download",method = RequestMethod.GET)
-    public ResultUtil fileDownLoad(HttpServletResponse response, @RequestParam("fileName") String fileName){
-        File file = new File(downloadFilePath +'/'+ fileName);
-        if(!file.exists()){
-            return new ResultUtil(false,"文件不存在");
-        }
-        response.reset();
-        response.setContentType("application/octet-stream");
-        response.setCharacterEncoding("utf-8");
-        response.setContentLength((int) file.length());
-        response.setHeader("Content-Disposition", "attachment;filename=" + fileName );
-
-        try(BufferedInputStream bis = new BufferedInputStream(new FileInputStream(file));) {
-            byte[] buff = new byte[1024];
-            OutputStream os  = response.getOutputStream();
-            int i = 0;
-            while ((i = bis.read(buff)) != -1) {
-                os.write(buff, 0, i);
-                os.flush();
+    @RequestMapping(value = "user/download",method = RequestMethod.GET)
+    public ResultUtil fileDownLoad(HttpServletResponse response, @RequestParam("fileName") String fileName) {
+        Subject subject = SecurityUtils.getSubject();
+        if (!subject.isAuthenticated()) {
+            return new ResultUtil(false, "管理员请先进行登录",401);
+        } else {
+            File file = new File(downloadFilePath + '/' + fileName);
+            if (!file.exists()) {
+                return new ResultUtil(false, "文件不存在",401);
             }
-        } catch (IOException e) {
-//            log.error("{}",e);
-//            return "下载失败";
-            return new ResultUtil(false,"下载失败");
-        }
-        return new ResultUtil(true,"下载成功");
-    }
+            response.reset();
+            response.setContentType("application/octet-stream");
+            response.setCharacterEncoding("utf-8");
+            response.setContentLength((int) file.length());
+            response.setHeader("Content-Disposition", "attachment;filename=" + fileName);
 
+            try (BufferedInputStream bis = new BufferedInputStream(new FileInputStream(file));) {
+                byte[] buff = new byte[1024];
+                OutputStream os = response.getOutputStream();
+                int i = 0;
+                while ((i = bis.read(buff)) != -1) {
+                    os.write(buff, 0, i);
+                    os.flush();
+                }
+            } catch (IOException e) {
+                return new ResultUtil(false, "下载失败",401);
+            }
+            return new ResultUtil(true, "下载成功",401);
+        }
+    }
 
 }

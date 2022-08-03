@@ -3,24 +3,33 @@ package com.hp.article.shiro;
 import org.apache.shiro.authc.AuthenticationToken;
 
 /**
- * 实现token的认证操作
- * 自定义一个JwtToken，来完成shiro的supports方法。
+ * 这个就类似UsernamePasswordToken
  */
 public class JwtToken implements AuthenticationToken {
+    //返回值都是jwt
 
-    private String token;
+    private String jwt;
 
     public JwtToken(String jwt) {
-        this.token = jwt;
+        this.jwt = jwt;
     }
 
+    /**
+     * 类似是用户名
+     * @return
+     */
     @Override
     public Object getPrincipal() {
-        return token;
+        return jwt;
     }
 
+    /**
+     * 类似密码
+     * @return
+     */
     @Override
     public Object getCredentials() {
-        return token;
+        return jwt;
     }
+
 }
